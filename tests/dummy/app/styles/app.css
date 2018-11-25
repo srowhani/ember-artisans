@@ -1,0 +1,14 @@
+body {
+  height: 100vh;
+  width: 100vw;
+}
+
+body > .ember-view:not(.ember-modal-dialog) {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+body > .ember-view ~ .ember-view {
+  height: auto;
+}

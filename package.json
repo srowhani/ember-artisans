@@ -1,0 +1,63 @@
+{
+  "name": "ember-artisans",
+  "version": "0.0.0",
+  "description": "Small wrapper library for utilizing web workers in ember",
+  "keywords": [
+    "ember-addon"
+  ],
+  "private": true,
+  "license": "MIT",
+  "author": "",
+  "directories": {
+    "doc": "doc",
+    "test": "tests"
+  },
+  "scripts": {
+    "build": "ember build",
+    "start": "ember server",
+    "test": "ember test",
+    "prepublishOnly": "ember ts:precompile",
+    "postpublish": "ember ts:clean"
+  },
+  "engines": {
+    "node": "6.* || 8.* || >= 10.*"
+  },
+  "ember-addon": {
+    "configPath": "tests/dummy/config"
+  },
+  "dependencies": {
+    "broccoli-babel-transpiler": "^7.1.0",
+    "broccoli-filter": "^1.2.2",
+    "broccoli-funnel": "^2.0.1",
+    "broccoli-merge-trees": "^3.0.1",
+    "broccoli-source": "^1.1.0",
+    "broccoli-typescript-compiler": "^4.0.1",
+    "ember-cli-babel": "^7.1.3",
+    "ember-cli-htmlbars": "^3.0.0",
+    "ember-uuid": "^1.0.1"
+  },
+  "devDependencies": {
+    "@ember-decorators/babel-transforms": "^2.0.0",
+    "@types/ember": "^3.0.25",
+    "babel-eslint": "^8.0.0",
+    "broccoli-asset-rev": "^3.0.0",
+    "ember-cli": "^3.5.1",
+    "ember-cli-dependency-checker": "^3.0.0",
+    "ember-cli-htmlbars-inline-precompile": "^2.0.0",
+    "ember-cli-inject-live-reload": "^2.0.1",
+    "ember-cli-sri": "^2.1.1",
+    "ember-cli-typescript": "^1.5.0",
+    "ember-cli-uglify": "^2.1.0",
+    "ember-concurrency": "^0.8.22",
+    "ember-decorators": "^3.1.0",
+    "ember-disable-prototype-extensions": "^1.1.3",
+    "ember-export-application-global": "^2.0.0",
+    "ember-load-initializers": "^1.1.0",
+    "ember-resolver": "^5.0.1",
+    "ember-source": "^3.3.0",
+    "ember-source-channel-url": "^1.1.0",
+    "loader.js": "^4.7.0",
+    "qunit-dom": "^0.7.1",
+    "typescript": "^3.1.6"
+  }
+}
