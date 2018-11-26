@@ -5,6 +5,9 @@
   "keywords": [
     "ember-addon"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "license": "MIT",
   "author": "",
   "directories": {
