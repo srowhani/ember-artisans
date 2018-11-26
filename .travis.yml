@@ -24,4 +24,4 @@ deploy:
   local-dir: dist
   on:
     branch: master
-    condition: $TRAVIS_NODE_VERSION = "9"
+    condition: $TRAVIS_NODE_VERSION = "10"
