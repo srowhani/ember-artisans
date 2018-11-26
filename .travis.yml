@@ -1,0 +1,28 @@
+language: node_js
+node_js:
+- '9'
+- '8'
+cache:
+  directories:
+  - node_modules
+notifications:
+  email: false
+install:
+- npm install
+script:
+- npm run build
+- npm run test
+after_success:
+  - npm run docs
+  - npm run travis-deploy-once "npm run semantic-release"
+branches:
+  only:
+    - master
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-token: $GH_TOKEN
+  local-dir: docs
+  on:
+    branch: master
+    condition: $TRAVIS_NODE_VERSION = "9"
