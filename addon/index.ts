@@ -3,9 +3,9 @@ import {
   JSONRPCResponse,
   WorkerProxyStrategy,
 } from 'ember-artisans/types';
-import { v4 as uuid } from 'uuid';
 
 let WORKER_ID = 0;
+let TRANSPORT_ID = 0;
 
 export const timeout = (ms: number) =>
   new Promise(resolve => setTimeout(resolve, ms));
@@ -47,7 +47,7 @@ export function createWorker(
       return async function taskWrapper(
         ...params: any[]
       ): Promise<JSONRPCResponse> {
-        const transportId = `${workerId}-${uuid()}`;
+        const transportId = `${workerId}-${TRANSPORT_ID++}`;
 
         artisanInstance.isRunning = true;
 
