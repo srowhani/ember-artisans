@@ -12,6 +12,6 @@ export default Controller.extend({
 
   asyncTask: task(function * () {
     const workerPool = this.artisans.poolFor('/assets/workers/test-worker.js')
-    return workerPool.doSomething(1, 2)
+    return workerPool.doSomething(1, 3)
   }).restartable()
 })
