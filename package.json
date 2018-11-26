@@ -1,6 +1,6 @@
 {
   "name": "ember-artisans",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Small wrapper library for utilizing web workers in ember",
   "keywords": [
     "ember-addon"
