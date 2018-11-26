@@ -15,7 +15,8 @@
   "scripts": {
     "build": "ember build",
     "start": "ember server",
-    "test": "ember test",
+    "test": "jest --verbose --coverage --no-watchman --runInBand",
+    "test:watch": "jest --watch",
     "prepublishOnly": "ember ts:precompile",
     "postpublish": "ember ts:clean",
     "lint": "tslint --project .",
@@ -46,9 +47,8 @@
     "@commitlint/cli": "^6.1.3",
     "@commitlint/config-conventional": "^6.1.3",
     "@semantic-release/git": "^4.0.1",
-    "@ember-decorators/babel-transforms": "^2.0.0",
     "@types/ember": "^3.0.25",
-    "babel-eslint": "^8.0.0",
+    "@types/jest": "^22.2.0",
     "broccoli-asset-rev": "^3.0.0",
     "ember-cli": "^3.5.1",
     "ember-cli-dependency-checker": "^3.0.0",
@@ -66,12 +66,13 @@
     "ember-source": "^3.3.0",
     "ember-source-channel-url": "^1.1.0",
     "husky": "^1.2.0",
+    "jest": "^22.4.2",
     "lint-staged": "^8.1.0",
     "loader.js": "^4.7.0",
     "prettier": "^1.15.2",
     "semantic-release": "^15.9.17",
     "travis-deploy-once": "^4.4.1",
-    "qunit-dom": "^0.7.1",
+    "ts-jest": "^22.4.1",
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.16.0",
     "typescript": "^3.1.6"
@@ -81,6 +82,29 @@
       "pre-commit": "lint-staged",
       "commit-msg": "commitlint -e $HUSKY_GIT_PARAMS"
     }
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "jsx",
+      "json",
+      "ts",
+      "tsx"
+    ],
+    "transform": {
+      "\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "moduleNameMapper": {
+      "@src/(.*)": "<rootDir>/src/$1",
+      "@test/(.*)": "<rootDir>/test/$1"
+    },
+    "testRegex": "(/tests/.*spec)\\.ts$",
+    "coveragePathIgnorePatterns": [
+      "dist",
+      "/node_modules/",
+      "test"
+    ],
+    "testEnvironment": "node"
   },
   "lint-staged": {
     "addon/**/*.ts": [
