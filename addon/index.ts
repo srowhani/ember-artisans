@@ -3,7 +3,7 @@ import {
   JSONRPCResponse,
   WorkerProxyStrategy,
 } from 'ember-artisans/types';
-import { v4 as uuid } from 'ember-uuid';
+import { v4 as uuid } from 'uuid';
 
 let WORKER_ID = 0;
 
