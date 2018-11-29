@@ -1,6 +1,7 @@
 body {
   height: 100vh;
   width: 100vw;
+  font-family: -apple-system,BlinkMacSystemFont,avenir next,avenir,helvetica neue,helvetica,ubuntu,roboto,noto,segoe ui,arial,sans-serif;
 }
 
 body > .ember-view:not(.ember-modal-dialog) {
@@ -11,4 +12,18 @@ body > .ember-view:not(.ember-modal-dialog) {
 
 body > .ember-view ~ .ember-view {
   height: auto;
+}
+
+.table-wrapper, .scrollable {
+  display: block;
+  height: 100%;
+  overflow: scroll;
+  -webkit-overflow-scrolling: touch;
+  overflow-scrolling: touch;
+  position: relative;
+  background: #fff;
+}
+
+.cursor-not-allowed {
+  cursor: not-allowed;
 }

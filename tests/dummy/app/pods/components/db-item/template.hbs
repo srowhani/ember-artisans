@@ -1,0 +1,11 @@
+<td class="pv2 w-10 ph-2 dbname">
+  {{attrs.db.id}}
+</td>
+<td class="pv2 w-10 ph-2 query-count">
+  <span class="{{countClassName}}">
+    {{queries.length}}
+  </span>
+</td>
+{{#each topFiveQueries key="@index" as |query|}}
+  <td class='pv2 w-10 ph-2'>{{query.elapsed}}</td>
+{{/each}}

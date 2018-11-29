@@ -1,1 +1,39 @@
-{{asyncTask.lastSuccessful.value.result}}
+<div class='pt6 pb6 flex flex-column items-center justify-center bb b--black-10 f4 bg-washed-green dark-green'>
+  {{x-toggle
+    class='mb5'
+    value=(readonly useWorker)
+    theme='material'
+    onToggle=(action (mut useWorker))
+    onLabel='Worker Thread'
+    offLabel='Main Thread'
+    showLabels=true
+  }}
+  <a
+    class={{concat
+      "f6 link dim br1 ph3 pv2 dib white "
+      (if generateNoise.isRunning 'bg-mid-gray cursor-not-allowed' 'bg-dark-green')
+    }}
+    href="#0"
+    {{action (unless generateNoise.isRunning (perform generateNoise))}}
+  >
+    Generate Noise
+  </a>
+</div>
+<div class="table-wrapper">
+  <table class='w-100'>
+    <tbody>
+      {{#vertical-collection model.databases
+        containerSelector=".table-wrapper"
+        key="id"
+
+        estimateHeight=37
+        staticHeight=true
+        bufferSize=5
+
+        as |db|
+      }}
+        {{db-item class='striped--light-gray' db=db}}
+      {{/vertical-collection}}
+    </tbody>
+  </table>
+</div>
