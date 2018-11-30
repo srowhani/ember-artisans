@@ -1,6 +1,6 @@
 {
   "name": "ember-artisans",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Small wrapper library for utilizing web workers in ember",
   "keywords": [
     "ember-addon"
@@ -38,7 +38,7 @@
     "format:test": "find ./test/ -name '*.ts*' | xargs prettier --write --config ./.prettierrc --config-precedence file-override",
     "travis-deploy-once": "travis-deploy-once",
     "semantic-release": "semantic-release",
-    "deploy:prod": "ember deploy production" 
+    "deploy:prod": "ember deploy production"
   },
   "engines": {
     "node": "6.* || 8.* || >= 10.*"
