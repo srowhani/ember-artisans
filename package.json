@@ -9,10 +9,21 @@
     "access": "public"
   },
   "license": "MIT",
-  "author": "",
+  "author": {
+    "name": "Seena Rowhani",
+    "email": "seenarowhani95@gmail.com",
+    "url": "https://srowhani.github.io"
+  },
   "directories": {
     "doc": "doc",
     "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/srowhani/ember-artisans.git"
+  },
+  "bugs": {
+    "url": "https://github.com/srowhani/ember-artisans/issues"
   },
   "scripts": {
     "build": "ember build",
@@ -26,7 +37,8 @@
     "format:src": "find ./addon/ -name '*.ts*' | xargs prettier --write --config ./.prettierrc --config-precedence file-override",
     "format:test": "find ./test/ -name '*.ts*' | xargs prettier --write --config ./.prettierrc --config-precedence file-override",
     "travis-deploy-once": "travis-deploy-once",
-    "semantic-release": "semantic-release"
+    "semantic-release": "semantic-release",
+    "deploy:prod": "ember deploy production" 
   },
   "engines": {
     "node": "6.* || 8.* || >= 10.*"
@@ -139,5 +151,6 @@
         ]
       }
     ]
-  }
+  },
+  "homepage": "https://srowhani.github.io/ember-artisans"
 }
