@@ -1,6 +1,5 @@
-<img src='https://raw.githubusercontent.com/srowhani/files/master/leader.png' width=250 height=250/>
 
-# ember-artisans
+# ember-artisans <img src='https://raw.githubusercontent.com/srowhani/files/master/leader.png' width=100 height=100/> 
 
 Artisans is a tool that makes using web workers in your application a lot more accessible. With use of tools like [ember-concurrency](http://ember-concurrency.com/docs/introduction/), side-loading expensive computations can be written in a synchronous and readable manner.
 
