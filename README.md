@@ -8,41 +8,65 @@ import { task } from 'ember-concurrency';
 import { createWorker } from 'ember-artisans';
 
 export default Controller.extend({
-  init (...args) {
-    this._super(...args);
-    this.myWorker = createWorker('/path/to/worker.js')
-  },
+  myWorker: computed(function () {
+    return createWorker('./path/to/my/worker.js')
+  }),
   taskWithExpensiveOperation: task(function * () {
-    const workerResult = yield this.myWorker.doSomething()
+    const { result } = yield this.myWorker.work()
+    this.set('result', result) // that's it!
     ...
   }).on('init')
 })
 ```
 
+Every result comes back with an `id` (of the worker that accomplished the task), and a `result` - being the result of the method you had called!
+
 ## Installation
 
-`yarn add ember-artisans`
+No heavy installation is required, all you'll have to do to add it to your project is just run
 
-## Usage
+```sh
+yarn add ember-artisans
+ ```
 
-### Creating your workers
-To get started, you'll have to run the generator. This package provides templates for creating your very own artisan.
+## Getting Started!
 
-Running `ember g artisan <name>` will create a web worker for you in the root of your package inside `./workers`
-All changes made to the files in this directory will be automatically be picked up by the live reload server, and updated inside your app!
+#### Creating your workers
 
-### Consuming in your application
+Before doing anything, the first thing you'll have to do is actually create your workers. For convenience, there's a blueprint provided that helps you do just that.
 
-There are several methods that are offered that allow you to communicate with your artisans.
+Running `ember g artisan <name>` will create a web worker for you in the root of your package inside `<root>/workers`
+All changes made to the files in this directory will be automatically picked up by the live reload server, and updated inside your app!
 
-#### Method 1 - `createWorker / createWorkerPool`
+The result of running the generator will look something like this:
 
-`import { createWorker, createWorkerPool } from 'ember-artisans'
+```js
+// workers/foo.js
+module.exports = {
+  async foo () {
+    return 'bar'
+  }
+}
+```
 
-Both createWorker, and createWorkerPool return a proxy that allows you to communicate directly with your workers.
+That's it! 
+
+**Note**
+
+Within a worker, you are not able to import any library directly (you can through importScripts), or access the DOM.
+
+#### Usage
+
+There are a couple ways to pull the worker in, and make use of them. I'll walk over each available method of interacting with each worker.
+
+```js
+import { createWorker, createWorkerPool } from 'ember-artisans'
+```
+
+Both `createWorker`, and `createWorkerPool` return a proxy that allows you to communicate directly with your workers.
 
 ##### createWorker
-```
+```js
 createWorker(
   workerPath: string,
   options = {
@@ -53,21 +77,18 @@ createWorker(
 
 Specifying a worker path is done by providing the url that the workers are built at. By default - workers are place inside of `dist/assets/workers/<name>.js`
 
-Referencing a worker inside your application would look something like this:
-
-`createWorker('/assets/workers/<name>.js')`
-
-You can reference any of the methods in the worker file by name.
 
 ###### Example
 
-```
+```js
 // main.js
+import { createWorker } from 'ember-artisans'
+
 const mathWorker = createWorker('/assets/workers/m_worker.js')
 const { result } = await mathWorker.add(1, 2)
 console.log(result) // = 3
 
-// m_worker.js
+// workers/m_worker.js
 
 const timeout = ms => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -82,7 +103,7 @@ module.exports = {
 }
 ```
 
-The worker itself can have functions be asynchronous. So if for example you were working with an asynchronous API like IndexedDB, it's completely accessible.
+Each method inside your worker file can also be asynchronous!
 
 ##### createWorkerPool
 
@@ -97,8 +118,10 @@ export function createWorkerPool(
 
 ###### Example
 
-```
+```js
 // main.js
+import { createWorkerPool } from 'ember-artisans'
+
 const mathWorker = createWorkerPool('/assets/workers/m_worker.js', 2)
 const { id, result } = await mathWorker.add(1, 2)
 console.log(id, result) // = <transport_id>, <3>
@@ -148,15 +171,6 @@ export interface JSONRPCResponse extends JSONRPCTransport {
 
 Every transport message will include an id, composed of the ID of the worker itself, along with a unique number corresponding to the transport. Each worker will keep track of this ID when sending back a response to ensure the consumer receives what they had requested.
 
-## Running Tests
-
-* `yarn test`
-
-## Building
-
-* `yarn build`
-
-For more information on using ember-cli, visit [https://ember-cli.com/](https://ember-cli.com/).
 
 ### Deploying
 
