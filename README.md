@@ -8,9 +8,7 @@ import { task } from 'ember-concurrency';
 import { createWorker } from 'ember-artisans';
 
 export default Controller.extend({
-  myWorker: computed(function () {
-    return createWorker('./path/to/my/worker.js')
-  }),
+  myWorker: createWorker('./path/to/my/worker.js'),
   taskWithExpensiveOperation: task(function * () {
     const { result } = yield this.myWorker.work()
     this.set('result', result) // that's it!
