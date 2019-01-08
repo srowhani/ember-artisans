@@ -4,6 +4,8 @@
 Artisans is a tool that makes using web workers in your application a lot more accessible. With use of tools like [ember-concurrency](http://ember-concurrency.com/docs/introduction/), side-loading expensive computations can be written in a synchronous and readable manner.
 
 ```js
+// controller.js
+
 import { task } from 'ember-concurrency';
 import { createWorker } from 'ember-artisans';
 
@@ -15,6 +17,15 @@ export default Controller.extend({
     ...
   }).on('init')
 })
+
+// worker.js
+module.exports = {
+  work () {
+    return fetch('...')
+      .then(r => r.json())
+      .then(item => heavyComputations(item))
+  }
+}
 ```
 
 Every result comes back with an `id` (of the worker that accomplished the task), and a `result` - being the result of the method you had called!
