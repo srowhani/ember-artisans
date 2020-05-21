@@ -1,7 +1,9 @@
 
+import { diff } from 'deep-diff'
+
 module.exports = {
   calculatePrimes(iterations = 500, multiplier = 1000000000) {
-    var primes = [];
+    const primes = [];
     for (var i = 0; i < iterations; i++) {
       var candidate = i * (multiplier * Math.random());
       var isPrime = true;
@@ -16,6 +18,7 @@ module.exports = {
         primes.push(candidate);
       }
     }
-    return primes;
+
+    return diff(primes, []);
   }
 }

@@ -5,8 +5,8 @@
 /tmp/
 
 # dependencies
-/bower_components/
-/node_modules/
+bower_components/
+node_modules/
 
 # misc
 /.sass-cache
