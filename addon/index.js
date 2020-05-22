@@ -1,29 +1,21 @@
-import {
-  Artisan,
-  JSONRPCResponse,
-  WorkerProxyStrategy,
-} from 'ember-artisans/types';
-
 let WORKER_ID = 0;
 let TRANSPORT_ID = 0;
 
-export const timeout = (ms: number) =>
-  new Promise(resolve => setTimeout(resolve, ms));
+export const timeout = (ms) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
 
 export function createWorker(
-  workerPath: string,
+  workerPath,
   options = {
     timeout: 5000,
   },
 ) {
-  const resolutionMap: {
-    [transportId: string]: (value?: {} | PromiseLike<{}> | undefined) => void;
-  } = {};
+  const resolutionMap = {};
 
   const workerId = `worker_${WORKER_ID++}`;
   const workerInstance = new Worker(workerPath);
 
-  const artisanInstance: Artisan = Object.assign(workerInstance, {
+  const artisanInstance = Object.assign(workerInstance, {
     id: workerId,
     isRunning: false,
   });
@@ -44,9 +36,7 @@ export function createWorker(
         return Reflect.get(target, method, receiver);
       }
 
-      return async function taskWrapper(
-        ...params: any[]
-      ): Promise<JSONRPCResponse> {
+      return async function taskWrapper(...params) {
         const transportId = `${workerId}-${TRANSPORT_ID++}`;
 
         artisanInstance.isRunning = true;
@@ -59,7 +49,7 @@ export function createWorker(
           },
         }));
 
-        const workerResolve = new Promise<JSONRPCResponse>(resolve => {
+        const workerResolve = new Promise((resolve) => {
           resolutionMap[transportId] = resolve;
         });
 
@@ -70,7 +60,7 @@ export function createWorker(
           params,
         });
 
-        const resolvedAction = await Promise.race<JSONRPCResponse>([
+        const resolvedAction = await Promise.race([
           workerTimeout,
           workerResolve,
         ]);
@@ -84,26 +74,21 @@ export function createWorker(
   });
 }
 
-function getBestCandidate(pool: Artisan[]): Artisan {
+function getBestCandidate(pool) {
   return pool.find(({ isRunning }) => !isRunning) || pool[0];
 }
 
-export function createWorkerPool(
-  workerPath: string,
-  poolSize: number,
-): Artisan[] & WorkerProxyStrategy<Promise<JSONRPCResponse>> {
+export function createWorkerPool(workerPath, poolSize) {
   const availableWorkers = new Array(poolSize)
     .fill(null)
     .map(() => createWorker(workerPath));
 
   return new Proxy(availableWorkers, {
-    get(workerPool, method: string) {
-      return function taskPoolWrapper(
-        ...params: any[]
-      ): Promise<JSONRPCResponse> {
+    get(workerPool, method) {
+      return function taskPoolWrapper(...params) {
         const candidateWorker = getBestCandidate(workerPool);
         return candidateWorker[method](...params);
       };
     },
-  }) as any;
+  });
 }
