@@ -2,9 +2,10 @@ const mergeTrees = require('broccoli-merge-trees')
 const rollup = require('broccoli-rollup');
 const { buildWorkerTree } = require('./lib/worker-tree')
 const fs = require('fs');
-const { default: resolve } = require('@rollup/plugin-node-resolve');
+const { default: nodeResolve } = require('@rollup/plugin-node-resolve');
 const commonjs = require('@rollup/plugin-commonjs');
-const boundRollup = (workerPath) => {
+
+const boundRollup = workerPath => {
   const workerList = fs.readdirSync(workerPath);
   
   return rollup(workerPath, {
@@ -17,8 +18,8 @@ const boundRollup = (workerPath) => {
         },
       ],
       plugins: [
-        resolve({
-          extensions: ['.js', '.ts'],
+        nodeResolve({
+          extensions: ['.js'],
           browser: true,
           preferBuiltIns: false 
         }),
