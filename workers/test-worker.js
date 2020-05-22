@@ -1,6 +1,6 @@
 import { v4 as uuidV4 } from 'uuid';
 
-module.exports = {
+export default class Worker {
   calculatePrimes(iterations = 500, multiplier = 1000000000) {
     const primes = [];
     for (let i = 0; i < iterations; i++) {
@@ -19,7 +19,7 @@ module.exports = {
     }
 
     return primes;
-  },
+  }
 
   uuid() {
     return uuidV4();
