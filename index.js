@@ -1,48 +1,50 @@
-const mergeTrees = require('broccoli-merge-trees')
+const mergeTrees = require('broccoli-merge-trees');
 const rollup = require('broccoli-rollup');
-const { buildWorkerTree } = require('./lib/worker-tree')
+const { buildWorkerTrees } = require('./lib/worker-tree');
 const fs = require('fs');
+const path = require('path');
 const { default: nodeResolve } = require('@rollup/plugin-node-resolve');
 const commonjs = require('@rollup/plugin-commonjs');
 
-const boundRollup = workerPath => {
+const treeFactory = (workerPath) => {
   const workerList = fs.readdirSync(workerPath);
-  
-  return rollup(workerPath, {
-    rollup: {
-      input: workerList,
-      output: [
-        {
-          dir: `assets/workers`,
-          format: 'esm',
-        },
-      ],
-      plugins: [
-        nodeResolve({
-          extensions: ['.js'],
-          browser: true,
-          preferBuiltIns: false 
-        }),
-        commonjs({
-          include: [/node_modules/],
-        }),
-      ],
-    }
-  })
-}
+
+  return workerList.map((workerName) =>
+    rollup(workerPath, {
+      rollup: {
+        input: workerName,
+        output: [
+          {
+            name: workerName,
+            dir: `assets/workers`,
+            format: 'umd',
+          },
+        ],
+        plugins: [
+          nodeResolve({
+            extensions: ['.js'],
+            browser: true,
+            preferBuiltIns: false,
+          }),
+          commonjs({
+            include: [/node_modules/],
+          }),
+        ],
+      },
+    }),
+  );
+};
 
 module.exports = {
   name: require('./package').name,
 
-  treeForPublic (tree) {
+  treeForPublic(tree) {
+    const workerPath = path.join(this.project.root, 'workers');
     const joinedTrees = [
-      buildWorkerTree(
-        this.project,
-        boundRollup
-      ),
-      tree
-    ].filter(Boolean)
+      ...buildWorkerTrees(workerPath, treeFactory),
+      tree,
+    ].filter(Boolean);
 
-    return mergeTrees(joinedTrees, { overwrite: true })
-  }
-}
+    return mergeTrees(joinedTrees, { overwrite: true });
+  },
+};
