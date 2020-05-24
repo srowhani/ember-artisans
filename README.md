@@ -1,8 +1,8 @@
 
 # <img src='https://raw.githubusercontent.com/srowhani/files/master/leader.png' width=100 height=100/> ember-artisans 
 
-[![NPM Version](https://badge.fury.io/js/ember-artisans.svg?style=flat)](https://npmjs.org/package/sass-lint-auto-fix)
-[![Build Status](https://travis-ci.org/srowhani/sass-lint-auto-fix.svg?branch=master)](https://travis-ci.org/srowhani/ember-artisans/)
+[![NPM Version](https://badge.fury.io/js/ember-artisans.svg?style=flat)](https://npmjs.org/package/ember-artisans)
+[![Build Status](https://travis-ci.org/srowhani/ember-artisans.svg?branch=master)](https://travis-ci.org/srowhani/ember-artisans/)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
 Artisans is a tool that makes using web workers in your application a lot more accessible. It offers an easy to use, Promise based API, that lets you break up your business logic to run on other threads, so that client side logic doesn't bog down your application's user experience.
@@ -143,10 +143,10 @@ export default class TaskPoolWorker {
 }
 ```
 
-### `artisans` service
+### `service('artisans')`
 
-This addon will also provide a service, that handles the termination of workers for you. It can be used as follows:
-
+This addon also provides a service that lets you instantiate a worker pool to be shared across different parts
+of your application.
 
 ```js
 // app/controllers/foo.js
@@ -206,6 +206,22 @@ module.exports = {
   async foo() {
     const response = await bar();
     return baz(response);
+  }
+}
+```
+
+### ESM Imports in Workers ✨
+
+You're able to import any of your node_modules/ into your worker, as long as they're able to run in browser context!
+
+Here's a sample worker using the [uuid](https://www.npmjs.com/package/uuid) package on npm.
+
+```js
+import { v4 as uuidV4 } from 'uuid';
+
+export default class UUIDWorker {
+  generateUuid() {
+    return uuidV4();
   }
 }
 ```
