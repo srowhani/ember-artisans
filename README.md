@@ -1,81 +1,100 @@
 
-# ember-artisans <img src='https://raw.githubusercontent.com/srowhani/files/master/leader.png' width=100 height=100/> 
+# <img src='https://raw.githubusercontent.com/srowhani/files/master/leader.png' width=100 height=100/> ember-artisans 
 
-Artisans is a tool that makes using web workers in your application a lot more accessible. With use of tools like [ember-concurrency](http://ember-concurrency.com/docs/introduction/), side-loading expensive computations can be written in a synchronous and readable manner.
+[![NPM Version](https://badge.fury.io/js/ember-artisans.svg?style=flat)](https://npmjs.org/package/sass-lint-auto-fix)
+[![Build Status](https://travis-ci.org/srowhani/sass-lint-auto-fix.svg?branch=master)](https://travis-ci.org/srowhani/ember-artisans/)
+[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
+
+Artisans is a tool that makes using web workers in your application a lot more accessible. It offers an easy to use, Promise based API, that lets you break up your business logic to run on other threads, so that client side logic doesn't bog down your application's user experience.
+
+Here's an example of how it might look in your application!
 
 ```js
-// controller.js
-
+// app/controllers/application.js
+import Controller from '@ember/controller'
+import { readOnly } from '@ember/object/computed';
 import { task } from 'ember-concurrency';
 import { createWorker } from 'ember-artisans';
 
-export default Controller.extend({
-  myWorker: createWorker('./path/to/my/worker.js'),
-  taskWithExpensiveOperation: task(function * () {
-    const { result } = yield this.myWorker.work()
-    this.set('result', result) // that's it!
-    ...
-  }).on('init')
-})
+export default class ApplicationController extends Controller {
+  worker = createWorker('/assets/workers/heavy-lifting.js');
 
-// worker.js
-module.exports = {
-  work () {
-    return fetch('...')
-      .then(r => r.json())
-      .then(item => heavyComputations(item))
+  @(task(function* () {
+    return this.worker.liftHeavy()?.result;
+  }))
+  heavyLiftingTask;
+
+  @readOnly('heavyLiftingTask.last.value')
+  heavyLifting;
+
+  /**
+   * @override
+   * https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#Terminating_a_worker
+   */
+  willDestroy() {
+    super.willDestroy(...arguments);
+
+    this.worker.terminate();
   }
 }
 ```
 
-Every result comes back with an `id` (of the worker that accomplished the task), and a `result` - being the result of the method you had called!
+```js
+// workers/heavy-lifting.js
+export default class HeavyLiftingWorker {
+  liftHeavy () {
+    return fetch('...')
+      .then(response => heavyComputations(response))
+  }
+}
+```
 
-## Installation
+That's it! In the above example we're instantiating a worker using the `createWorker` utility. This returns a proxied [Web Worker](https://developer.mozilla.org/en-US/docs/Web/API/Worker), that allows for any method you invoke will be delegated to it's corresponding worker.
 
-No heavy installation is required, all you'll have to do to add it to your project is just run
+
+## Getting Started 
+
+### Installation 🎉
+The first step is installing `ember-artisans`. This will provide you with the templates for generating your workers, as well as the necessary build steps along the way.
 
 ```sh
-yarn add ember-artisans
- ```
+yarn add -D ember-artisans
+```
 
-## Getting Started!
+### Creating workers 🛠
 
-#### Creating your workers
-
-Before doing anything, the first thing you'll have to do is actually create your workers. For convenience, there's a blueprint provided that helps you do just that.
-
-Running `ember g artisan <name>` will create a web worker for you in the root of your package inside `<root>/workers`
+Once this has completed, you'll be able to start writing your workers! Running `ember g artisan <name>` will create your web worker for you in the root of your project inside `<root>/workers`
 All changes made to the files in this directory will be automatically picked up by the live reload server, and updated inside your app!
 
-The result of running the generator will look something like this:
+Here's some example input, and the corresponding output:
+
+`ember g artisan foo-bar`
 
 ```js
-// workers/foo.js
-module.exports = {
-  async foo () {
-    return 'bar'
+/**
+ * Add your worker description here.
+ */
+export default class FooBarWorker {
+  // Add your worker methods here.
+
+  /**
+   * @returns Promise<void>
+   */
+  async fooBar() {
+    
   }
 }
 ```
 
-That's it! 
+## API 👩‍💻
 
-**Note**
+There are a couple ways to pull the worker in, and make use of them. I'll walk over each of the available methods of interacting with your workers.
 
-Within a worker, you are not able to import any library directly (you can through importScripts), or access the DOM.
-
-#### Usage
-
-There are a couple ways to pull the worker in, and make use of them. I'll walk over each available method of interacting with each worker.
+### `createWorker`
 
 ```js
-import { createWorker, createWorkerPool } from 'ember-artisans'
-```
+import { createWorker } from 'ember-artisans';
 
-Both `createWorker`, and `createWorkerPool` return a proxy that allows you to communicate directly with your workers.
-
-##### createWorker
-```js
 createWorker(
   workerPath: string,
   options = {
@@ -84,103 +103,113 @@ createWorker(
 ) => Proxy<Worker>
 ```
 
-Specifying a worker path is done by providing the url that the workers are built at. By default - workers are place inside of `dist/assets/workers/<name>.js`
-
-
-###### Example
+Specifying a worker path is done by providing the url that the workers are built at. By default - workers are place inside of `dist/assets/workers/<name>.js` This means that you would consume them by referencing their public location.
 
 ```js
-// main.js
-import { createWorker } from 'ember-artisans'
-
-const mathWorker = createWorker('/assets/workers/m_worker.js')
-const { result } = await mathWorker.add(1, 2)
-console.log(result) // = 3
-
-// workers/m_worker.js
-
-const timeout = ms => new Promise(resolve => setTimeout(resolve, ms))
-
-module.exports = {
-  add(a, b) {
-    return a + b
-  },
-  async waitThenAdd(a, b) {
-    await timeout(500)
-    return a + b
-  }
-}
+const 🐹 = createWorker('/assets/workers/tomster.js')
 ```
 
-Each method inside your worker file can also be asynchronous!
+### `createWorkerPool`
 
-##### createWorkerPool
+```js
 
-Create worker pool has the same interface as createWorker. Each worker when running a task is put in a state of isRunning. This lets the worker pool know who to hand the next task off to.
+import { createWorkerPool } from 'ember-artisans';
 
-```ts
 export function createWorkerPool(
   workerPath: string,
   poolSize: number,
-): Artisan[] & WorkerProxyStrategy<Promise<JSONRPCResponse>>
+)
 ```
 
-###### Example
+`createWorkerPool` will work the same as `createWorker`, except that when a method is invoked on a worker pool, it will instead look for the first non-busy worker to delegate your task to.
+
+Using it would look something like this:
 
 ```js
-// main.js
-import { createWorkerPool } from 'ember-artisans'
+// app/controllers/foo.js
+import { createWorkerPool } from 'ember-artisans';
 
-const mathWorker = createWorkerPool('/assets/workers/m_worker.js', 2)
-const { id, result } = await mathWorker.add(1, 2)
-console.log(id, result) // = <transport_id>, <3>
+const taskPool = createWorkerPool('/assets/workers/task-pool.js', 5);
+await taskPool.doSomething();
+...
+```
 
-// m_worker.js
-
-const timeout = ms => new Promise(resolve => setTimeout(resolve, ms))
-
-module.exports = {
-  add(a, b) {
-    return a + b
-  },
-  async waitThenAdd(a, b) {
-    await timeout(500)
-    return a + b
+```js
+// workers/worker-pool.js
+export default class TaskPoolWorker {
+  async doSomething () {
+    return await something();
   }
 }
 ```
 
-Each message returned from a worker or a pool will be in JSONRPC compliant format, meaning you'll receive an error object if something goes wrong inside your worker. For more information on the format of the messages sent and received, see implementation details below.
+### `artisans` service
+
+This addon will also provide a service, that handles the termination of workers for you. It can be used as follows:
 
 
-### Implementation
+```js
+// app/controllers/foo.js
+import Controller from '@ember/controller';
 
-Ember Artisans uses [proxies](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) to give you a simplified approach to communicating with your workers. The method, and parameters that are referenced on the worker, are formatted into a message that is sent to the worker instance via `postMessage`. 
+import { inject as service } from '@ember/service';
+import { task } from 'ember-concurrency';
 
-#### Message Format
+export default class FooController extends Controller {
+  @service('artisans')
+  artisanService;
 
-```ts
-export interface JSONRPCTransport {
-  jsonrpc: string;
-  id: string;
-}
-
-export interface JSONRPCRequest extends JSONRPCTransport {
-  method: string;
-  params: any[];
-}
-
-export interface JSONRPCResponse extends JSONRPCTransport {
-  result?: any;
-  error?: {
-    message: string;
-  };
+  @(task(function* () {
+    const workerPool = this.artisanService.poolFor('/assets/workers/pool.js', 2);
+    return workerPool.doSomething();
+  }))
+  poolTask;
 }
 ```
 
-Every transport message will include an id, composed of the ID of the worker itself, along with a unique number corresponding to the transport. Each worker will keep track of this ID when sending back a response to ensure the consumer receives what they had requested.
+## Handling Responses
 
+Methods on your Worker will return as such, on successful completion.
 
-### Deploying
+```js
+import { createWorker } from 'ember-artisans';
 
-This project uses semantic release for up-versioning and releases to Github and npm. Please follow angular convention commits, so that the commit analyzer can determine how to up-version the package.
+const tomsterWorker = createWorker('/assets/workers/tomster.js');
+
+const {
+  result, // optional, present if the worker ran successfully!
+  error, // optional, present if there was an error encountered by the worker, or in the event of a timeout
+  id,   // identifier corresponding to the request instance, used internally to map postMessage to responses
+} = await tomsterWorker.runOnWheel();
+```
+
+## Notes 📓
+
+### Worker Syntax
+
+Currently worker's can be specified as the default export (ESM), or as the module.export (CJS). That means that each of the following is an acceptable way of declaring your workers.
+
+```js
+// esm
+export default class FoobarWorker {
+  async foo() {
+    const response = await bar();
+    return baz(response);
+  }
+  ...
+}
+```
+
+```js
+// cjs
+module.exports = {
+  async foo() {
+    const response = await bar();
+    return baz(response);
+  }
+}
+```
+
+### Naming Worker Methods
+
+To preserve the native methods present on a worker, avoid naming your Artisan worker methods the same as the native [Worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers) methods.
