@@ -12,39 +12,25 @@ Here's an example of how it might look in your application!
 ```js
 // app/controllers/application.js
 import Controller from '@ember/controller'
-import { readOnly } from '@ember/object/computed';
-import { task } from 'ember-concurrency';
+import { action } from '@ember/object';
 import { createWorker } from 'ember-artisans';
 
 export default class ApplicationController extends Controller {
-  worker = createWorker('/assets/workers/heavy-lifting.js');
+  worker = createWorker('/assets/workers/foo.js');
 
-  @(task(function* () {
-    return this.worker.liftHeavy()?.result;
-  }))
-  heavyLiftingTask;
-
-  @readOnly('heavyLiftingTask.last.value')
-  heavyLifting;
-
-  /**
-   * @override
-   * https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#Terminating_a_worker
-   */
-  willDestroy() {
-    super.willDestroy(...arguments);
-
-    this.worker.terminate();
+  @action
+  async onFooBar() {
+    const { result } = await this.worker.foo('bar');
+    // ...
   }
 }
 ```
 
 ```js
-// workers/heavy-lifting.js
-export default class HeavyLiftingWorker {
-  liftHeavy () {
-    return fetch('...')
-      .then(response => heavyComputations(response))
+// workers/foo.js
+export default class FooBarWorker {
+  foo (bar) {
+    return `foo${bar}`;
   }
 }
 ```

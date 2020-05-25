@@ -42,7 +42,6 @@ export function createWorker(
         artisanInstance.isRunning = true;
 
         const workerTimeout = timeout(options.timeout).then(() => ({
-          jsonrpc: '2.0',
           id: transportId,
           error: {
             message: `TimeoutError: Timed out after ${options.timeout} ms`,
@@ -54,7 +53,6 @@ export function createWorker(
         });
 
         workerInstance.postMessage({
-          jsonrpc: '2.0',
           id: transportId,
           method,
           params,
