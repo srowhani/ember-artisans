@@ -8,9 +8,7 @@ export default class DemoController extends Controller {
   @(task(function* () {
     if (this.useWorker) {
       // Run computations on worker thread
-      const { result } = yield this.testWorker.calculatePrimes();
-      // return resulting value
-      return result;
+      return this.testWorker.calculatePrimes();
     }
     // Run computations on main thread
     return this.calculatePrimes();

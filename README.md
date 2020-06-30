@@ -20,7 +20,7 @@ export default class ApplicationController extends Controller {
 
   @action
   async onFooBar() {
-    const { result } = await this.worker.foo('bar');
+    const result = await this.worker.foo('bar');
     // ...
   }
 }
@@ -37,6 +37,39 @@ export default class FooBarWorker {
 
 That's it! In the above example we're instantiating a worker using the `createWorker` utility. This returns a proxied [Web Worker](https://developer.mozilla.org/en-US/docs/Web/API/Worker), that allows for any method you invoke will be delegated to it's corresponding worker.
 
+
+## Migration Guide (1.x -> 2.x)
+
+Starting from version 2, the interface has changed so that the result will no longer have to be unwrapped from the worker response.
+
+### Before 🕸
+```js
+export default class ApplicationController extends Controller {
+  worker = createWorker('/assets/workers/foo.js');
+
+  @action
+  async onFooBar() {
+    const { result }  = await this.worker.foo('bar');
+    // ...
+  }
+}
+```
+
+
+### After ✨
+
+```js
+export default class ApplicationController extends Controller {
+  worker = createWorker('/assets/workers/foo.js');
+
+  @action
+  async onFooBar() {
+    const result = await this.worker.foo('bar');
+  }
+}
+```
+
+This also means if that the worker will no longer silently fail if an exception is thrown. Be sure to properly handle errors if they are present!
 
 ## Getting Started 
 
@@ -215,3 +248,7 @@ export default class UUIDWorker {
 ### Naming Worker Methods
 
 To preserve the native methods present on a worker, avoid naming your Artisan worker methods the same as the native [Worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers) methods.
+
+### My Worker Isn't Being Detected 🕵️‍♂️
+
+If you create a new worker after the development server is already running, you might need to restart it for the worker to be properly be built into the public assets directory.

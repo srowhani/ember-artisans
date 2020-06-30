@@ -66,7 +66,12 @@ export function createWorker(
         delete resolutionMap[transportId];
 
         artisanInstance.isRunning = false;
-        return resolvedAction;
+
+        if (resolvedAction.error) {
+          throw resolvedAction.error;
+        }
+
+        return resolvedAction.result;
       };
     },
   });
