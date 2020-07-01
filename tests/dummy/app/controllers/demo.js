@@ -5,6 +5,7 @@ import { createWorker } from 'ember-artisans';
 export default class DemoController extends Controller {
   testWorker = createWorker('/ember-artisans/assets/workers/test-worker.js');
 
+  /* eslint-disable-next-line require-yield */
   @(task(function* () {
     if (this.useWorker) {
       // Run computations on worker thread
