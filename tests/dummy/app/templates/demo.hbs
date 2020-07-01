@@ -25,11 +25,9 @@
       {{#vertical-collection model.databases
         containerSelector=".table-wrapper"
         key="id"
-
         estimateHeight=37
         staticHeight=true
         bufferSize=5
-
         as |db|
       }}
         {{db-item class='striped--light-gray' db=db}}

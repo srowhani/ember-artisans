@@ -5,12 +5,11 @@ import { createWorker } from 'ember-artisans';
 export default class DemoController extends Controller {
   testWorker = createWorker('/ember-artisans/assets/workers/test-worker.js');
 
+  /* eslint-disable-next-line require-yield */
   @(task(function* () {
     if (this.useWorker) {
       // Run computations on worker thread
-      const { result } = yield this.testWorker.calculatePrimes();
-      // return resulting value
-      return result;
+      return this.testWorker.calculatePrimes();
     }
     // Run computations on main thread
     return this.calculatePrimes();
